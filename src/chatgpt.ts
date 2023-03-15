@@ -14,7 +14,6 @@ const sendMessage = async (message: string) => {
       },
       body: JSON.stringify({
         model: model,
-        max_tokens: 150,
         messages: [
           {"role": "system", "content": "You are a helpful assistant."},
           {
