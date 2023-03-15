@@ -66,7 +66,7 @@ export class ChatGPTBot {
     return text
   }
   async getGPTMessage(text: string,userId:string): Promise<string> {
-    const { conversationId, textNew, id } = await sendMessage(text,chatOption[userId].conversationIds,chatOption[userId].conversationIds,chatOption[userId].oldText)
+    const { conversationId, textNew, id } = await sendMessage(text,chatOption[userId]?.conversationIds,chatOption[userId]?.conversationIds,chatOption[userId]?.oldText)
     chatOption = {
       [userId]: {
         conversationId,

@@ -7,7 +7,7 @@ let model = config.model;
 let temperature = config.temperature;
 const sendMessage = async (message: string,conversationIds:string,parentMessageIds:string,oldText:string) => {
   const conversationId = conversationIds||v4(),
-  parentMessageId = parentMessageIds,
+  parentMessageId = parentMessageIds||"",
   messageId = v4()
   const result = {
     role: "assistant",
@@ -34,7 +34,7 @@ const sendMessage = async (message: string,conversationIds:string,parentMessageI
             "content": message,
           },{
             "role": "assistant",
-            "content":oldText
+            "content":result.textNew
           }
         ],
         temperature: temperature,
