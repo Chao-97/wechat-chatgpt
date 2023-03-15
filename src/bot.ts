@@ -178,6 +178,11 @@ export class ChatGPTBot {
     if (this.isNonsense(talker, messageType, rawText)) {
       return;
     }
+    if(rawText == "/reset"){
+      chatOption[talker.id]={
+        
+      }
+    }
     if (this.tiggerGPTMessage(rawText, privateChat)) {
       const text = this.cleanMessage(rawText, privateChat);
       if (privateChat) {
