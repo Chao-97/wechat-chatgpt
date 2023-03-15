@@ -66,12 +66,26 @@ export class ChatGPTBot {
     return text
   }
   async getGPTMessage(text: string,userId:string): Promise<string> {
-    const { conversationId, textNew, id } = await sendMessage(text,chatOption[userId]?.conversationIds?chatOption[userId]?.conversationIds:"",chatOption[userId]?.parentMessageId?chatOption[userId]?.parentMessageId:"",chatOption[userId]?.oldText?chatOption[userId]?.oldText:"")
+    const { 
+      conversationId, 
+      textNew, 
+      id 
+    } = await sendMessage(
+      text,
+      chatOption[userId]?.conversationIds?chatOption[userId]?.conversationIds:"",
+      chatOption[userId]?.parentMessageId?chatOption[userId]?.parentMessageId:"",
+      chatOption[userId]?.oldReq?chatOption[userId]?.oldReq:"",
+      chatOption[userId]?.oldQue?chatOption[userId]?.oldQue:"");
+    let oldReq = textNew;
+    if(oldReq == "请稍后重试！"){
+      oldReq = "";
+    }
     chatOption = {
       [userId]: {
         conversationId,
         parentMessageId: id,
-        oldText:textNew
+        oldReq:oldReq,
+        oldQue:text
       },
     };
     console.log("chatOption",chatOption);
@@ -178,7 +192,7 @@ export class ChatGPTBot {
     if (this.isNonsense(talker, messageType, rawText)) {
       return;
     }
-    if(rawText == "/reset"){
+    if(rawText == `${config.chatPrivateTiggerKeyword}reset`||rawText == `${config.chatPrivateTiggerKeyword}换个话题`){
       chatOption[talker.id]={
       }
       await this.trySay(talker, "重置成功，请开始新的话题吧！");

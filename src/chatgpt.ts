@@ -5,7 +5,7 @@ let api = config.api;
 let apiKey = config.openai_api_key;
 let model = config.model;
 let temperature = config.temperature;
-const sendMessage = async (message: string,conversationIds:string,parentMessageIds:string,oldText:string) => {
+const sendMessage = async (message: string,conversationIds:string,parentMessageIds:string,oldReq:string,oldQue:string) => {
   const conversationId = conversationIds||v4(),
   parentMessageId = parentMessageIds||"",
   messageId = v4()
@@ -14,10 +14,38 @@ const sendMessage = async (message: string,conversationIds:string,parentMessageI
     id: v4(),
     parentMessageId: messageId,
     conversationId,
-    textNew: oldText||""
+    textNew: oldReq||""
   };
+  let massages;
   try {
-
+    if(oldQue.length>0){
+      massages = [
+        {"role": "system",
+         "content": "You are a helpful assistant."
+        },{
+          "role": "user",
+          "content": oldQue,
+        },{
+          "role": "assistant",
+          "content":result.textNew
+        },{
+          "role": "user",
+          "content": message,
+        }
+      ];
+    }else{
+      massages = [
+        {"role": "system",
+         "content": "You are a helpful assistant."
+        },{
+          "role": "assistant",
+          "content":result.textNew
+        },{
+          "role": "user",
+          "content": message,
+        }
+      ];
+    }
     const response = await fetch(`${api}/v1/chat/completions`, {
       method: "POST",
       headers: {
@@ -26,17 +54,7 @@ const sendMessage = async (message: string,conversationIds:string,parentMessageI
       },
       body: JSON.stringify({
         model: model,
-        messages: [
-          {"role": "system",
-           "content": "You are a helpful assistant."
-          },{
-            "role": "user",
-            "content": message,
-          },{
-            "role": "assistant",
-            "content":result.textNew
-          }
-        ],
+        messages: massages,
         temperature: temperature,
         top_p: 1,
         frequency_penalty: 0.0,
@@ -55,6 +73,7 @@ const sendMessage = async (message: string,conversationIds:string,parentMessageI
     return result;
   } catch (e) {
     console.error(e)
+    result.textNew = "请稍后重试！"
     return result
   }
 }
