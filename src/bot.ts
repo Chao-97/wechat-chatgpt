@@ -2,6 +2,7 @@ import { config } from "./config.js";
 import { ContactInterface, RoomInterface } from "wechaty/impls";
 import { Message } from "wechaty";
 import {sendMessage} from "./chatgpt.js";
+let chatOption = {};
 enum MessageType {
   Unknown = 0,
 
@@ -64,8 +65,17 @@ export class ChatGPTBot {
     // remove more text via - - - - - - - - - - - - - - -
     return text
   }
-  async getGPTMessage(text: string): Promise<string> {
-    return await sendMessage(text);
+  async getGPTMessage(text: string,userId:string): Promise<string> {
+    const { conversationId, textNew, id } = await sendMessage(text,chatOption[userId].conversationIds,chatOption[userId].conversationIds,chatOption[userId].oldText)
+    chatOption = {
+      [userId]: {
+        conversationId,
+        parentMessageId: id,
+        oldText:textNew
+      },
+    };
+    console.log("chatOption",chatOption);
+    return textNew
   }
   // Check if the message returned by chatgpt contains masked words]
   checkChatGPTBlockWords(message: string): boolean {
@@ -145,7 +155,7 @@ export class ChatGPTBot {
   }
 
   async onPrivateMessage(talker: ContactInterface, text: string) {
-    const gptMessage = await this.getGPTMessage(text);
+    const gptMessage = await this.getGPTMessage(text,talker.id);
     await this.trySay(talker, gptMessage);
   }
 
@@ -154,7 +164,7 @@ export class ChatGPTBot {
     text: string,
     room: RoomInterface
   ) {
-    const gptMessage = await this.getGPTMessage(text);
+    const gptMessage = await this.getGPTMessage(text,talker.id);
     const result = `@${talker.name()} ${text}\n\n------ ${gptMessage}`;
     await this.trySay(room, result);
   }
