@@ -14,14 +14,18 @@ const sendMessage = async (message: string) => {
       },
       body: JSON.stringify({
         model: model,
+        max_tokens: 150,
         messages: [
+          {"role": "system", "content": "You are a helpful assistant."},
           {
             "role": "user",
             "content": message
           }
         ],
         temperature: temperature,
-        stop:["退下吧","再见","拜拜"]
+        top_p: 1,
+        frequency_penalty: 0.0,
+        presence_penalty: 0.6,
       }),
     }).then((res) => res.json());
 
