@@ -180,8 +180,9 @@ export class ChatGPTBot {
     }
     if(rawText == "/reset"){
       chatOption[talker.id]={
-        
       }
+      await this.trySay(talker, "重置成功，请开始新的话题吧！");
+      return;
     }
     if (this.tiggerGPTMessage(rawText, privateChat)) {
       const text = this.cleanMessage(rawText, privateChat);
