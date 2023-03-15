@@ -14,15 +14,18 @@ const sendMessage = async (message: string) => {
       },
       body: JSON.stringify({
         model: model,
+        max_tokens:100,
         messages: [
           {
             "role": "user",
             "content": message
           }
         ],
-        temperature: temperature
+        temperature: temperature,
+        stop:["退下吧","再见","拜拜"]
       }),
     }).then((res) => res.json());
+
     if (response.error?.message) {
       console.log("OpenAI API ERROR: ",response.error.message)
       // throw new Error(`OpenAI API ${response.error.message}`);
